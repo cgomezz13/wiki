@@ -13,16 +13,14 @@ class WikiController < ApplicationController
     title = doc.search("//h1")
     file_contents = doc.search("div.mw-parser-output")
 
-    file_contents.xpath("//table").each do |table|
+    file_contents.search("//table").each do |table|
       table["class"] = "wiki-table"
     end
 
     # wiki table
     lines = file_contents.search("table.wiki-table caption", "table.wiki-table tr th", "table.wiki-table tr td")
     lines.each do |check|
-      puts check.to_s
-      puts "CHECK CLASS OF TABLE -- #{check["class"]}"
-      puts "-------------"
+      # avoid media table cells
       if !(check.to_s.include?("flagicon") || check.to_s.include?("image") || check.to_s.include?("mediaContainer"))
         check.content = pig_latinify(check.text)
       end
@@ -56,7 +54,7 @@ class WikiController < ApplicationController
     # main content
     # to add these ruins translation of images: "//a", "//td"
     # "//ul//li"
-    lines = file_contents.xpath("//h2//span//a", "//h3//span//a", "//h4//span//a", "//p")
+    lines = file_contents.search("//h2//span//a", "//h3//span//a", "//h4//span//a", "//p")
     lines.each do |check|
       check.content = pig_latinify(check.text)
     end
